@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F7F8FA">
+<title>Fortivex AI — AI Operations Audits for Property Management</title>
+<meta name="description" content="Fortivex AI audits your property management operation in 7 days and hands you 3–5 build-ready automations with honest ROI math. Find $25,000/year in savings or the audit is free.">
+<meta property="og:title" content="Fortivex AI — AI Operations Audits for Property Management">
+<meta property="og:description" content="A 7-day audit that finds the repetitive work burning your payroll — with the math to prove it. $25,000/year found or it's free.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230E1F33'/%3E%3Cpath d='M20 14h26v9H30v9h14v9H30v9h-10z' fill='%230E8C7F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================ TOKENS ============================ */
+:root{
+  /* surfaces */
+  --bg:#F7F8FA;
+  --surface:#FFFFFF;
+  --ink-band:#0E1F33;          /* closing band background */
+  /* text */
+  --text:#13212F;
+  --text-muted:#46586A;
+  --text-subtle:#6B7C8C;
+  /* lines */
+  --rule:#DCE3EA;
+  --rule-strong:#B9C5D0;
+  /* brand */
+  --navy:#0E1F33;
+  --accent:#0A6B5F;            /* CTA + recovered-money text */
+  --accent-hover:#08574D;
+  --accent-bright:#0E8C7F;     /* decorative lines, chips */
+  --accent-tint:#E9F4F2;
+  --leak:#B42318;              /* money-leaking numbers only */
+  --leak-tint:#FBEDEB;
+  /* on dark band */
+  --band-text:#EEF3F7;
+  --band-muted:#9FB0BF;
+  --band-rule:rgba(238,243,247,.16);
+  /* type */
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono','Cascadia Mono',Consolas,monospace;
+  /* motion */
+  --ease-out:cubic-bezier(0,0,.2,1);
+  --ease-in-out:cubic-bezier(.4,0,.2,1);
+  --t-fast:120ms;
+  --t-default:200ms;
+  --t-reveal:480ms;
+  /* layout */
+  --max:1120px;
+  --pad:clamp(20px,5vw,48px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  font-family:var(--sans);
+  font-size:16px;line-height:1.55;
+  color:var(--text);background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent-tint);color:var(--navy)}
+
+h1,h2,h3{line-height:1.12;text-wrap:balance;letter-spacing:-0.015em;font-weight:700;color:var(--navy)}
+p{text-wrap:pretty}
+a{color:var(--accent)}
+img,svg{display:block}
+
+.mono{font-family:var(--mono)}
+.kicker{
+  font-family:var(--mono);font-size:.72rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--accent);
+}
+.num{font-variant-numeric:tabular-nums}
+
+.wrap{max-width:var(--max);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+
+/* faint blueprint grid on the canvas */
+.gridbg{
+  background-image:
+    linear-gradient(to right, rgba(14,31,51,.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14,31,51,.045) 1px, transparent 1px);
+  background-size:56px 56px;
+}
+
+/* ============================ NAV ============================ */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,248,250,.88);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);
+}
+.nav-inner{
+  max-width:var(--max);margin:0 auto;padding:0 var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  height:60px;
+}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.brand-name{font-weight:700;font-size:1.05rem;color:var(--navy);letter-spacing:-0.01em;white-space:nowrap}
+.brand-name b{color:var(--accent)}
+.brand-tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-subtle)}
+.nav-links{display:flex;gap:22px;align-items:center}
+.nav-links a.link{
+  font-size:.86rem;font-weight:600;color:var(--text-muted);text-decoration:none;
+  transition:color var(--t-fast) var(--ease-out);
+}
+.nav-links a.link:hover{color:var(--navy)}
+.progress{
+  position:absolute;left:0;bottom:-1px;height:2px;width:100%;
+  transform:scaleX(0);transform-origin:left;
+  background:var(--accent-bright);
+}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--sans);font-weight:600;font-size:.95rem;
+  padding:13px 22px;border-radius:6px;text-decoration:none;
+  border:1px solid transparent;cursor:pointer;min-height:44px;white-space:nowrap;
+  transition:background-color var(--t-fast) var(--ease-out),
+             border-color var(--t-fast) var(--ease-out),
+             color var(--t-fast) var(--ease-out),
+             transform 90ms var(--ease-out);
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-ghost{background:transparent;color:var(--navy);border-color:var(--rule-strong)}
+.btn-ghost:hover{border-color:var(--navy)}
+.btn-sm{padding:9px 16px;font-size:.86rem;min-height:38px}
+.btn-arrow{transition:transform var(--t-fast) var(--ease-out)}
+.btn:hover .btn-arrow{transform:translateX(3px)}
+
+/* ============================ LEFT INDEX RAIL ============================ */
+.rail{
+  position:fixed;left:max(16px,calc((100vw - var(--max))/2 - 150px));
+  top:50%;transform:translateY(-50%);z-index:40;
+  display:none;flex-direction:column;gap:14px;
+}
+@media (min-width:1400px){.rail{display:flex}}
+.rail a{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-subtle);text-decoration:none;display:flex;align-items:center;gap:8px;
+  transition:color var(--t-fast) var(--ease-out);
+}
+.rail a::before{
+  content:"";width:14px;height:1px;background:var(--rule-strong);
+  transition:width var(--t-default) var(--ease-out),background-color var(--t-default) var(--ease-out);
+}
+.rail a:hover{color:var(--navy)}
+.rail a.active{color:var(--accent)}
+.rail a.active::before{width:26px;background:var(--accent)}
+
+/* ============================ HERO ============================ */
+.hero{padding:clamp(56px,9vh,104px) 0 clamp(48px,7vh,84px);border-bottom:1px solid var(--rule)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(32px,5vw,72px);align-items:center}
+@media (max-width:920px){.hero-grid{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(2.1rem,4.6vw,3.4rem);margin:18px 0 20px}
+.hero h1 .underline{
+  color:var(--accent);
+  background-image:linear-gradient(var(--accent-bright),var(--accent-bright));
+  background-repeat:no-repeat;background-size:100% 3px;background-position:0 100%;
+  padding-bottom:2px;
+}
+.hero .lead{font-size:1.13rem;color:var(--text-muted);max-width:34rem;margin-bottom:30px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;color:var(--text-subtle);
+}
+.hero-meta span{display:flex;align-items:center;gap:7px}
+.hero-meta svg{width:13px;height:13px;stroke:var(--accent);flex-shrink:0}
+
+/* ops feed — the hero demo */
+.feed{
+  background:var(--surface);border:1px solid var(--rule);border-radius:10px;
+  box-shadow:0 18px 44px -28px rgba(14,31,51,.35);
+  overflow:hidden;
+}
+.feed-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--bg);
+}
+.feed-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
+.feed-live{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent-bright)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.dot{animation:pulse 2s var(--ease-in-out) infinite}
+.feed-body{padding:6px 0;min-height:368px;display:flex;flex-direction:column;justify-content:flex-start}
+.msg{
+  padding:13px 16px;border-bottom:1px dashed var(--rule);
+  opacity:1;transform:translateY(0);
+}
+.msg:last-child{border-bottom:0}
+.msg.enter{animation:msgIn 320ms var(--ease-out)}
+@keyframes msgIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.msg-top{display:flex;align-items:center;gap:9px;margin-bottom:5px;flex-wrap:wrap}
+.msg-time{font-family:var(--mono);font-size:.68rem;color:var(--text-subtle)}
+.tag{
+  font-family:var(--mono);font-size:.6rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;border:1px solid var(--rule-strong);color:var(--text-muted);
+}
+.tag.urgent{border-color:var(--leak);color:var(--leak);background:var(--leak-tint)}
+.msg-text{font-size:.875rem;color:var(--text)}
+.msg-done{
+  display:flex;align-items:center;gap:7px;margin-top:7px;
+  font-family:var(--mono);font-size:.7rem;color:var(--accent);
+}
+.msg-done svg{width:12px;height:12px;stroke:var(--accent);flex-shrink:0}
+.feed-foot{
+  padding:10px 16px;border-top:1px solid var(--rule);background:var(--bg);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.05em;color:var(--text-subtle);
+}
+.feed-foot b{color:var(--accent);font-weight:500}
+
+/* ============================ SECTIONS ============================ */
+section{scroll-margin-top:76px}
+.sec{padding:clamp(64px,9vh,110px) 0;border-bottom:1px solid var(--rule);position:relative}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:14px}
+.sec-no{
+  font-family:var(--mono);font-size:.78rem;font-weight:500;color:var(--accent);
+  letter-spacing:.08em;
+}
+.sec h2{font-size:clamp(1.55rem,3vw,2.25rem)}
+.sec-sub{color:var(--text-muted);max-width:44rem;font-size:1.05rem;margin-bottom:44px}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(16px)}
+.reveal.in{
+  opacity:1;transform:translateY(0);
+  transition:opacity var(--t-reveal) var(--ease-out),transform var(--t-reveal) var(--ease-out);
+}
+.stagger>*{opacity:0;transform:translateY(14px)}
+.stagger.in>*{
+  opacity:1;transform:translateY(0);
+  transition:opacity var(--t-reveal) var(--ease-out),transform var(--t-reveal) var(--ease-out);
+}
+.stagger.in>*:nth-child(2){transition-delay:70ms}
+.stagger.in>*:nth-child(3){transition-delay:140ms}
+.stagger.in>*:nth-child(4){transition-delay:210ms}
+
+/* 01 — the leak */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--rule-strong);
+}
+@media (max-width:760px){.stats{grid-template-columns:1fr}}
+.stat{
+  padding:26px 26px 26px 0;border-bottom:1px solid var(--rule);
+}
+@media (min-width:761px){
+  .stat{border-right:1px solid var(--rule);padding:28px 26px}
+  .stat:first-child{padding-left:0}
+  .stat:last-child{border-right:0}
+}
+.stat-val{
+  font-size:clamp(2.2rem,4vw,3rem);font-weight:700;color:var(--navy);
+  letter-spacing:-0.02em;line-height:1;
+}
+.stat-val.is-leak{color:var(--leak)}
+.stat-unit{font-size:1rem;font-weight:600;color:var(--text-subtle);margin-left:2px}
+.stat-label{margin-top:10px;font-size:.9rem;color:var(--text-muted);max-width:24rem}
+.formula{
+  margin-top:48px;background:var(--surface);border:1px solid var(--rule);border-radius:8px;
+  padding:22px 24px;
+}
+.formula-label{font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-subtle);margin-bottom:10px}
+.formula-line{font-family:var(--mono);font-size:clamp(.8rem,1.8vw,.95rem);color:var(--text);overflow-x:auto;white-space:nowrap;padding-bottom:4px}
+.formula-line b{color:var(--leak);font-weight:500}
+.formula-note{margin-top:10px;font-size:.85rem;color:var(--text-muted)}
+.formula-note b{color:var(--accent)}
+
+/* 02 — the audit (spec sheet) */
+.audit-grid{display:grid;grid-template-columns:1fr 360px;gap:clamp(32px,4vw,60px);align-items:start}
+@media (max-width:920px){.audit-grid{grid-template-columns:1fr}}
+.spec{border-top:1px solid var(--rule-strong)}
+.spec-row{
+  display:grid;grid-template-columns:92px 1fr;gap:18px;
+  padding:18px 0;border-bottom:1px solid var(--rule);
+}
+@media (max-width:520px){.spec-row{grid-template-columns:64px 1fr;gap:12px}}
+.spec-id{font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:.06em;color:var(--text-subtle);padding-top:3px}
+.spec-row h3{font-size:1.02rem;margin-bottom:4px;font-weight:600}
+.spec-row p{font-size:.9rem;color:var(--text-muted)}
+.pricebox{
+  position:sticky;top:84px;
+  background:var(--navy);color:var(--band-text);border-radius:10px;padding:30px 28px;
+}
+.pricebox .kicker{color:var(--accent-bright)}
+.price{font-size:3rem;font-weight:700;letter-spacing:-0.02em;line-height:1;margin:14px 0 4px;color:#fff}
+.price-note{font-size:.86rem;color:var(--band-muted);margin-bottom:18px}
+.pricebox ul{list-style:none;margin:0 0 22px;padding:0}
+.pricebox li{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:.88rem;padding:7px 0;border-bottom:1px solid var(--band-rule);
+}
+.pricebox li:last-child{border-bottom:0}
+.pricebox li svg{width:14px;height:14px;stroke:var(--accent-bright);flex-shrink:0;margin-top:3px}
+.guarantee{
+  margin-top:16px;padding:13px 14px;border:1px dashed var(--accent-bright);border-radius:7px;
+  font-family:var(--mono);font-size:.74rem;line-height:1.5;color:var(--band-text);
+}
+.guarantee b{color:var(--accent-bright);font-weight:500}
+.sticky-line{
+  margin:46px 0 0;font-size:clamp(1.25rem,2.6vw,1.7rem);font-weight:700;color:var(--navy);
+  letter-spacing:-0.015em;
+}
+.sticky-line em{font-style:normal;color:var(--accent)}
+
+/* 03 — findings */
+.findings{border-top:1px solid var(--rule-strong)}
+.finding{
+  display:grid;grid-template-columns:120px 1fr 220px;gap:24px;
+  padding:26px 0;border-bottom:1px solid var(--rule);
+}
+@media (max-width:860px){
+  .finding{grid-template-columns:1fr;gap:10px;padding:24px 0}
+}
+.finding-id{font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.06em;color:var(--accent);padding-top:4px}
+.finding h3{font-size:1.12rem;margin-bottom:8px}
+.finding .scene{
+  font-size:.9rem;color:var(--text-muted);margin-bottom:8px;
+  padding-left:12px;border-left:2px solid var(--rule-strong);font-style:italic;
+}
+.finding .fix{font-size:.92rem;color:var(--text)}
+.finding-roi{text-align:left}
+@media (min-width:861px){.finding-roi{text-align:right}}
+.roi-val{font-size:1.35rem;font-weight:700;color:var(--accent);letter-spacing:-0.01em}
+.roi-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-subtle);margin-top:3px}
+.findings-total{
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding:22px 0;border-bottom:2px solid var(--navy);
+}
+.findings-total .label{font-family:var(--mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
+.findings-total .total{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--accent);letter-spacing:-0.015em}
+
+/* 04 — timeline */
+.timeline{position:relative;max-width:680px;margin-top:8px}
+.tl-track{
+  position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--rule);
+}
+.tl-fill{
+  position:absolute;left:0;top:0;width:100%;height:0%;
+  background:var(--accent-bright);
+}
+.tl-item{position:relative;padding:0 0 34px 40px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{
+  content:"";position:absolute;left:0;top:6px;width:16px;height:16px;border-radius:50%;
+  background:var(--bg);border:2px solid var(--rule-strong);
+  transition:border-color var(--t-default) var(--ease-out),background-color var(--t-default) var(--ease-out);
+}
+.tl-item.done::before{border-color:var(--accent);background:var(--accent-tint)}
+.tl-day{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.tl-item h3{font-size:1.05rem;margin:4px 0 5px;font-weight:600}
+.tl-item p{font-size:.9rem;color:var(--text-muted);max-width:34rem}
+
+/* 05 — pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface)}
+@media (max-width:880px){.tiers{grid-template-columns:1fr}}
+.tier{padding:30px 28px;border-right:1px solid var(--rule);display:flex;flex-direction:column}
+.tier:last-child{border-right:0}
+@media (max-width:880px){
+  .tier{border-right:0;border-bottom:1px solid var(--rule)}
+  .tier:last-child{border-bottom:0}
+}
+.tier.featured{background:var(--accent-tint);position:relative}
+.tier-step{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-subtle);margin-bottom:14px}
+.tier.featured .tier-step{color:var(--accent)}
+.tier h3{font-size:1.15rem;margin-bottom:2px}
+.tier-price{font-size:1.7rem;font-weight:700;color:var(--navy);letter-spacing:-0.015em;margin:8px 0 2px}
+.tier-per{font-size:.82rem;color:var(--text-subtle);margin-bottom:14px}
+.tier p.desc{font-size:.9rem;color:var(--text-muted);margin-bottom:16px}
+.tier ul{list-style:none;margin:0 0 24px;flex:1}
+.tier li{
+  font-size:.87rem;color:var(--text);padding:6px 0 6px 22px;position:relative;
+}
+.tier li::before{
+  content:"";position:absolute;left:0;top:13px;width:12px;height:2px;background:var(--accent-bright);
+}
+.tier .btn{width:100%}
+
+/* 06 — founder */
+.founder{display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,4vw,48px);align-items:start;max-width:820px}
+@media (max-width:640px){.founder{grid-template-columns:1fr}}
+.monogram{
+  width:86px;height:86px;border-radius:10px;background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--accent-bright);
+}
+.founder blockquote{font-size:1.08rem;color:var(--text);max-width:36rem;margin-bottom:18px}
+.founder blockquote p{margin-bottom:12px}
+.founder-sig{font-weight:700;color:var(--navy)}
+.founder-meta{font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;color:var(--text-subtle);margin-top:3px}
+
+/* FAQ */
+.faq{max-width:760px}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:19px 0;font-weight:600;font-size:1rem;color:var(--navy);
+  transition:color var(--t-fast) var(--ease-out);
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--accent)}
+.faq summary .plus{
+  font-family:var(--mono);font-size:1.05rem;color:var(--accent);flex-shrink:0;
+  transition:transform var(--t-default) var(--ease-in-out);
+}
+.faq details[open] summary .plus{transform:rotate(45deg)}
+.faq .answer{padding:0 36px 20px 0;font-size:.93rem;color:var(--text-muted)}
+.faq details[open] .answer{animation:fadeDown var(--t-default) var(--ease-out)}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================ CLOSING BAND ============================ */
+.band{
+  background:var(--ink-band);color:var(--band-text);
+  padding:clamp(72px,11vh,128px) 0;
+  background-image:
+    linear-gradient(to right, rgba(238,243,247,.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(238,243,247,.04) 1px, transparent 1px);
+  background-size:56px 56px;
+}
+.band .kicker{color:var(--accent-bright)}
+.band h2{color:#fff;font-size:clamp(1.9rem,4vw,3rem);margin:16px 0 18px;max-width:22ch}
+.band .lead{color:var(--band-muted);font-size:1.08rem;max-width:36rem;margin-bottom:32px}
+.band .btn-primary{background:var(--accent-bright);color:var(--navy)}
+.band .btn-primary:hover{background:#15A593}
+.band .alt{margin-top:18px;font-family:var(--mono);font-size:.78rem;color:var(--band-muted)}
+.band .alt a{color:var(--accent-bright);text-decoration:none;border-bottom:1px solid rgba(14,140,127,.5)}
+
+/* footer */
+footer{background:var(--ink-band);border-top:1px solid var(--band-rule);padding:26px 0}
+.foot{
+  max-width:var(--max);margin:0 auto;padding:0 var(--pad);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;color:var(--band-muted);
+}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============================ REDUCED MOTION ============================ */
+@media (prefers-reduced-motion:reduce){
+  .reveal,.stagger>*{opacity:1;transform:none;transition:none}
+  .msg.enter{animation:none}
+  .dot{animation:none}
+  .faq details[open] .answer{animation:none}
+  .progress{transition:none}
+  *{scroll-behavior:auto}
+}
+@media (max-width:560px){
+  .nav-links a.link{display:none}
+  .brand-tag{display:none}
+  .nav .btn-sm{padding:8px 14px;font-size:.8rem;min-height:36px}
+  .hero-ctas .btn{flex:1 1 auto;white-space:normal}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="Fortivex AI — home">
+      <span class="brand-name">FORTIVE<b>X</b> AI</span>
+      <span class="brand-tag">Ops Audits</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a class="link" href="#audit">The audit</a>
+      <a class="link" href="#findings">Findings</a>
+      <a class="link" href="#pricing">Pricing</a>
+      <a class="btn btn-primary btn-sm" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Book a free call</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+</header>
+
+<!-- left index rail (wide desktop) -->
+<nav class="rail" aria-label="Section index">
+  <a href="#leak" data-rail="leak">01 · Leak</a>
+  <a href="#audit" data-rail="audit">02 · Audit</a>
+  <a href="#findings" data-rail="findings">03 · Findings</a>
+  <a href="#process" data-rail="process">04 · 7 Days</a>
+  <a href="#pricing" data-rail="pricing">05 · Pricing</a>
+  <a href="#faq" data-rail="faq">06 · Questions</a>
+</nav>
+
+<main id="top">
+
+<!-- ============================ HERO ============================ -->
+<section class="hero gridbg">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">AI Operations Audit — Property Management</span>
+      <h1>Your team is paid to manage properties. They spend half the week <span class="underline">answering messages.</span></h1>
+      <p class="lead">Fortivex AI audits your operation in 7 days and hands you 3–5 build-ready automations — each with honest ROI math and a fixed price to build it.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Book a free 15-min call <span class="btn-arrow">&rarr;</span></a>
+        <a class="btn btn-ghost" href="#audit">See what the audit covers</a>
+      </div>
+      <div class="hero-meta mono">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>50–2,000 doors</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>AppFolio · Buildium · Rent Manager</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>US East Coast hours</span>
+      </div>
+    </div>
+
+    <div class="feed" aria-hidden="true">
+      <div class="feed-head">
+        <span class="feed-title">Inbox — after automation</span>
+        <span class="feed-live"><span class="dot"></span>Live demo</span>
+      </div>
+      <div class="feed-body" id="feed"></div>
+      <div class="feed-foot num" id="feedFoot">Handled without staff today: <b>0 messages · 0 min saved</b></div>
+    </div>
+    <p class="sr-only">Animated demonstration: tenant and owner messages arriving and being resolved automatically by AI workflows.</p>
+  </div>
+</section>
+
+<!-- ============================ 01 LEAK ============================ -->
+<section class="sec" id="leak">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">01</span><h2>The leak in your payroll</h2></div>
+    <p class="sec-sub reveal">Typical numbers from a 600-door operation. The audit measures <em>yours</em>.</p>
+
+    <div class="stats stagger num">
+      <div class="stat">
+        <div><span class="stat-val" data-count="25">0</span><span class="stat-unit">hrs/week</span></div>
+        <p class="stat-label">of staff time spent reading, sorting, and answering repetitive messages.</p>
+      </div>
+      <div class="stat">
+        <div><span class="stat-val" data-count="3">0</span><span class="stat-unit">of 4 messages</span></div>
+        <p class="stat-label">are routine: the same maintenance, leasing, and rent questions on repeat.</p>
+      </div>
+      <div class="stat">
+        <div><span class="stat-val is-leak" data-count="31200" data-prefix="$">$0</span><span class="stat-unit">/year</span></div>
+        <p class="stat-label">in salary spent on work a workflow can route, draft, and resolve.</p>
+      </div>
+    </div>
+
+    <div class="formula reveal">
+      <p class="formula-label">The math, in the open</p>
+      <p class="formula-line num">25 hrs/week &times; $24/hr loaded cost &times; 52 weeks = <b>$31,200 / year</b></p>
+      <p class="formula-note">Our audits typically find <b>60–75% of that recoverable</b> — before counting the leasing leads that go cold after hours. Every estimate we give you shows this formula with your numbers in it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 02 AUDIT ============================ -->
+<section class="sec" id="audit">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">02</span><h2>The AI Opportunity Audit</h2></div>
+    <p class="sec-sub reveal">Seven days inside your operation. One decision-grade report. No "AI ideas" — blueprints with prices and payback periods.</p>
+
+    <div class="audit-grid">
+      <div class="spec stagger">
+        <div class="spec-row">
+          <span class="spec-id">DOC-01</span>
+          <div><h3>AI readiness scorecard</h3><p>Your data, tools, processes, and team — scored, so you know what's automatable today and what needs prep first.</p></div>
+        </div>
+        <div class="spec-row">
+          <span class="spec-id">DOC-02</span>
+          <div><h3>Process inventory</h3><p>Every repeated task in your operation, measured from interviews and screen recordings — not guessed. Scored by frequency, time, and error cost.</p></div>
+        </div>
+        <div class="spec-row">
+          <span class="spec-id">DOC-03</span>
+          <div><h3>3–5 workflow blueprints</h3><p>For each: how it works today, how it runs automated, the tools, the monthly running cost, and a fixed price to build it.</p></div>
+        </div>
+        <div class="spec-row">
+          <span class="spec-id">DOC-04</span>
+          <div><h3>ROI math — conservative and expected</h3><p>Two scenarios per workflow with the formula shown. Payback period included. No single magic number, ever.</p></div>
+        </div>
+        <div class="spec-row">
+          <span class="spec-id">DOC-05</span>
+          <div><h3>90-day roadmap + walkthrough call</h3><p>What to build first (a quick win, live within 2 weeks), what to defer, and a 60-minute call where we walk every page.</p></div>
+        </div>
+      </div>
+
+      <aside class="pricebox reveal">
+        <span class="kicker">The audit</span>
+        <p class="price num">$997</p>
+        <p class="price-note">One-time. Credited toward your build if you continue within 30 days.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Delivered in 7 business days</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>2 interviews + screen recordings — about 3 hours of your team's time total</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Vendor-neutral: the report is yours, build with anyone</li>
+        </ul>
+        <a class="btn btn-primary" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener" style="width:100%">Book a free 15-min call</a>
+        <p class="guarantee"><b>THE GUARANTEE:</b> if the audit doesn't identify at least <b>$25,000/year</b> in savings opportunities, you don't pay for it.</p>
+      </aside>
+    </div>
+
+    <p class="sticky-line reveal">We don't sell AI ideas. <em>We sell the math.</em></p>
+  </div>
+</section>
+
+<!-- ============================ 03 FINDINGS ============================ -->
+<style>
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule-strong);margin-top:22px}
+  @media (max-width:760px){.metrics{grid-template-columns:1fr}}
+  .metric{padding:22px 24px 22px 0;border-bottom:1px solid var(--rule)}
+  @media (min-width:761px){.metric{border-right:1px solid var(--rule);padding:24px 26px}.metric:first-child{padding-left:0}.metric:last-child{border-right:0}}
+  .metric-val{font-size:clamp(1.7rem,3.2vw,2.3rem);font-weight:700;color:var(--accent);letter-spacing:-0.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .metric-label{margin-top:9px;font-size:.88rem;color:var(--text-muted);max-width:24rem}
+  .method{margin-top:46px;background:var(--accent-tint);border:1px solid rgba(10,107,95,0.22);border-radius:8px;padding:26px 30px}
+  .method-label{font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+  .method-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:16px 32px}
+  @media (max-width:680px){.method-list{grid-template-columns:1fr}}
+  .method-list li{font-size:.92rem;color:var(--text-muted);padding-left:20px;position:relative;line-height:1.5}
+  .method-list li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;background:var(--accent-bright);border-radius:2px}
+  .method-list b{color:var(--text);font-weight:600}
+  .founder-photo{width:132px;height:132px;border-radius:14px;object-fit:cover;border:1px solid var(--rule);box-shadow:0 16px 38px -22px rgba(14,31,51,.55);display:block}
+  @media (max-width:640px){.founder-photo{width:108px;height:108px}}
+</style>
+<section class="sec" id="findings">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">03</span><h2>What the audit typically finds</h2></div>
+    <p class="sec-sub reveal">Three workflows show up at almost every property management company. Yours will have its own — these set the bar.</p>
+
+    <div class="findings">
+      <div class="finding reveal">
+        <span class="finding-id">WF-01</span>
+        <div>
+          <h3>Maintenance triage</h3>
+          <p class="scene">11:42 PM — "Unit 204, the AC is dead and it's 88 degrees."</p>
+          <p class="fix">AI reads the request, grades urgency, answers the tenant in seconds, drafts the work order, and pings the on-call vendor for true emergencies. Your coordinator handles exceptions, not every email.</p>
+        </div>
+        <div class="finding-roi num">
+          <p class="roi-val">$12–18k</p>
+          <p class="roi-label">typical recovery / yr</p>
+        </div>
+      </div>
+
+      <div class="finding reveal">
+        <span class="finding-id">WF-02</span>
+        <div>
+          <h3>After-hours leasing responder</h3>
+          <p class="scene">7:05 AM — "Is the 2BR on Maple still available?" Sent at midnight. Still unanswered.</p>
+          <p class="fix">Every lead gets a qualified answer in under a minute, 24/7 — availability, requirements, and a showing slot on the calendar before your competitor opens email.</p>
+        </div>
+        <div class="finding-roi num">
+          <p class="roi-val">$4–9k</p>
+          <p class="roi-label">typical recovery / yr</p>
+        </div>
+      </div>
+
+      <div class="finding reveal">
+        <span class="finding-id">WF-03</span>
+        <div>
+          <h3>Rent follow-up</h3>
+          <p class="scene">Day 3 of the month. 14 tenants late. Nobody enjoys the calls.</p>
+          <p class="fix">Polite, escalating reminders with payment links, on schedule, every time — and a flagged list of the accounts that genuinely need a human conversation.</p>
+        </div>
+        <div class="finding-roi num">
+          <p class="roi-val">$6–10k</p>
+          <p class="roi-label">typical recovery / yr</p>
+        </div>
+      </div>
+
+      <div class="findings-total reveal num">
+        <span class="label">Typical finding across 3 workflows</span>
+        <span class="total">$22,000 – $37,000 / year</span>
+      </div>
+
+      <div class="metrics stagger num">
+        <div class="metric"><div class="metric-val">~70%</div><p class="metric-label">of routine messages handled automatically, start to finish</p></div>
+        <div class="metric"><div class="metric-val">&lt;60 sec</div><p class="metric-label">first response to every lead and tenant — 24/7, not "next business day"</p></div>
+        <div class="metric"><div class="metric-val">3–6 mo</div><p class="metric-label">typical payback — most builds pay for themselves within a quarter or two</p></div>
+      </div>
+
+      <div class="method reveal">
+        <p class="method-label">How we keep these numbers honest</p>
+        <ul class="method-list">
+          <li><b>Measured, not assumed.</b> Every figure comes from your real volumes and screen recordings — never industry averages.</li>
+          <li><b>A built-in reality discount.</b> We count only 75% of theoretical savings, so the number you see is already the conservative one.</li>
+          <li><b>Two scenarios, never one.</b> Each workflow shows a conservative and an expected case, with the formula beside it.</li>
+          <li><b>We're underwritten.</b> If the audit can't find $25,000/year, you don't pay — so we have no reason to inflate anything.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 04 PROCESS ============================ -->
+<section class="sec" id="process">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">04</span><h2>Seven days, start to report</h2></div>
+    <p class="sec-sub reveal">About three hours of your team's time. The rest is ours.</p>
+
+    <div class="timeline" id="timeline">
+      <div class="tl-track"><div class="tl-fill" id="tlFill"></div></div>
+      <div class="tl-item">
+        <span class="tl-day">Day 1</span>
+        <h3>Kickoff</h3>
+        <p>A 60–90 minute interview, your numbers (doors, team, volumes), and screen recordings of how work happens today.</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Days 2–3</span>
+        <h3>Process inventory</h3>
+        <p>We map every repeated task and score it: how often, how long, what errors cost, how automatable.</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Days 4–5</span>
+        <h3>Blueprints + ROI</h3>
+        <p>The top 3–5 workflows get full blueprints — tools, running costs, build quotes, and two-scenario savings math.</p>
+      </div>
+      <div class="tl-item">
+        <span class="tl-day">Days 6–7</span>
+        <h3>Report + walkthrough</h3>
+        <p>You get the full report, then a 60-minute call to walk it page by page. You leave knowing exactly what to build first and what it pays back.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 05 PRICING ============================ -->
+<section class="sec" id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">05</span><h2>Audit. Build. Keep it running.</h2></div>
+    <p class="sec-sub reveal">It starts with a free 15-minute call — no charge, no pressure. From there: start small, prove the math, and build only what pays for itself.</p>
+
+    <div class="tiers reveal">
+      <div class="tier featured">
+        <span class="tier-step">Step 1 — Start here</span>
+        <h3>AI Opportunity Audit</h3>
+        <p class="tier-price num">$997</p>
+        <p class="tier-per">one-time · credited toward your build</p>
+        <p class="desc">The full 7-day audit: scorecard, blueprints, ROI math, roadmap, walkthrough.</p>
+        <ul>
+          <li>$25k/year found or it's free</li>
+          <li>Fixed build quotes included</li>
+          <li>Yours to keep — build with anyone</li>
+        </ul>
+        <a class="btn btn-primary" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Book a free call</a>
+      </div>
+      <div class="tier">
+        <span class="tier-step">Step 2</span>
+        <h3>Build Sprint</h3>
+        <p class="tier-price num">$4k–15k</p>
+        <p class="tier-per">fixed quote from the audit</p>
+        <p class="desc">We build 1–3 workflows on your own accounts. You own everything — no platform lock-in.</p>
+        <ul>
+          <li>Quick win live in ~2 weeks</li>
+          <li>2 team training sessions</li>
+          <li>Recorded SOPs for every workflow</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Talk through a build</a>
+      </div>
+      <div class="tier">
+        <span class="tier-step">Step 3</span>
+        <h3>Care Plan</h3>
+        <p class="tier-price num">from $750</p>
+        <p class="tier-per">per month · cancel anytime</p>
+        <p class="desc">We watch, fix, and improve your automations — and keep finding new ones.</p>
+        <ul>
+          <li>Monitoring and same-week fixes</li>
+          <li>Monthly performance report</li>
+          <li>Hours for new automations</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Ask about care plans</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 06 FOUNDER + FAQ ============================ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="founder reveal" style="margin-bottom:72px">
+      <img class="founder-photo" src="founder.jpg" alt="Ayoub Abulail — founder of Fortivex AI" width="132" height="132">
+      <div>
+        <blockquote>
+          <p>"For five years I was a business analyst in PwC's Assurance practice — my job was to look at a company, find what was really happening, and prove it with numbers. Nothing shipped on a hunch."</p>
+          <p>"Fortivex brings that same discipline to AI. I measure where your team actually loses time, put an honest number on each fix, and build only what pays for itself. If an automation won't earn its cost back, my report says so — that page costs me money and earns your trust."</p>
+          <p>"I work U.S. Eastern hours and build while you sleep: a change you flag at 5 PM is usually live before your morning coffee."</p>
+        </blockquote>
+        <p class="founder-sig">Ayoub Abulail</p>
+        <p class="founder-meta">FOUNDER, FORTIVEX AI · EX-PwC ASSURANCE · ET BUSINESS HOURS</p>
+      </div>
+    </div>
+
+    <div class="sec-head reveal"><span class="sec-no">06</span><h2>Questions owners ask</h2></div>
+    <div class="faq reveal" style="margin-top:28px">
+      <details>
+        <summary>We already use virtual assistants. Why automate?<span class="plus">+</span></summary>
+        <div class="answer">Keep them — for judgment calls. Automation handles the volume underneath: sorting, first replies, reminders, data entry. Most clients redeploy VA hours to showings and owner relationships instead of inbox triage. The audit shows the split in hours.</div>
+      </details>
+      <details>
+        <summary>Does this work with our software?<span class="plus">+</span></summary>
+        <div class="answer">We build around AppFolio, Buildium, Rent Manager, and Propertyware — through their APIs where available, and through email/portal workflows where not. Compatibility is checked on day 1 of the audit, before any blueprint is written.</div>
+      </details>
+      <details>
+        <summary>How do I know these savings numbers are real?<span class="plus">+</span></summary>
+        <div class="answer">Because they come from your operation, not a brochure. During the audit we measure your actual message volumes and time-on-task from interviews and screen recordings, apply a conservative 75% adoption discount, and show the formula behind every figure. You always get a conservative and an expected number — never a single inflated one. And if we can't find at least $25,000/year, the audit is free.</div>
+      </details>
+      <details>
+        <summary>Other agencies offer free AI audits. Why pay $997?<span class="plus">+</span></summary>
+        <div class="answer">A free audit is a sales pitch with a cover page. Ours is underwritten: if we don't find $25,000/year in opportunities, you don't pay — and the report is vendor-neutral, so you can take it to any builder. The $997 also becomes credit if you build with us.</div>
+      </details>
+      <details>
+        <summary>We're not a technical team. Who runs this after you build it?<span class="plus">+</span></summary>
+        <div class="answer">It runs itself; your team just handles flagged exceptions. Every build includes 2 live training sessions and recorded step-by-step SOPs. The care plan covers monitoring and fixes if you'd rather never think about it.</div>
+      </details>
+      <details>
+        <summary>What does "AI answering tenants" actually say?<span class="plus">+</span></summary>
+        <div class="answer">Only what you approve. Replies follow your policies and templates, urgent cases escalate to humans immediately, and everything is logged. You review the exact wording during the build — nothing improvises on your brand.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CLOSING BAND ============================ -->
+<section class="band" id="book">
+  <div class="wrap">
+    <span class="kicker">Next step</span>
+    <h2>15 minutes. Your numbers. No slides.</h2>
+    <p class="lead">Bring your door count and team size. You'll leave the call knowing the 2–3 automations worth pricing at your company — whether or not you book the audit.</p>
+    <a class="btn btn-primary" href="https://cal.com/ayoub-abulail-iq1cqn/15min" target="_blank" rel="noopener">Book my free 15-min call <span class="btn-arrow">&rarr;</span></a>
+    <p class="alt">Prefer email? <a href="mailto:info@fortivexai.com">info@fortivexai.com</a> — replies within one ET business day.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="foot">
+    <span>&copy; 2026 FORTIVEX AI</span>
+    <span>AI OPERATIONS AUDITS — PROPERTY MANAGEMENT</span>
+    <span>REMOTE-FIRST · US EAST COAST HOURS</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- scroll progress + timeline fill (one rAF handler) ---------- */
+  var progress = document.getElementById("progress");
+  var tl = document.getElementById("timeline");
+  var tlFill = document.getElementById("tlFill");
+  var tlItems = tl ? Array.prototype.slice.call(tl.querySelectorAll(".tl-item")) : [];
+  var ticking = false;
+
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      var p = max > 0 ? (window.scrollY / max) : 0;
+      progress.style.transform = "scaleX(" + p + ")";
+
+      if(tl){
+        var r = tl.getBoundingClientRect();
+        var vh = window.innerHeight;
+        var passed = (vh * 0.72) - r.top;          /* fill reaches a point ~72% down the viewport */
+        var pct = Math.max(0, Math.min(1, passed / r.height));
+        tlFill.style.height = (pct * 100) + "%";
+        var lineY = r.top + pct * r.height;
+        tlItems.forEach(function(it){
+          var ir = it.getBoundingClientRect();
+          it.classList.toggle("done", ir.top + 10 <= lineY);
+        });
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll, {passive:true});
+  onScroll();
+  if(reduced && tlFill){ tlFill.style.height = "100%"; tlItems.forEach(function(it){it.classList.add("done");}); }
+
+  /* ---------- reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll(".reveal,.stagger");
+  if(reduced){
+    revealEls.forEach(function(el){ el.classList.add("in"); });
+  } else {
+    var ro = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("in"); ro.unobserve(e.target); }
+      });
+    }, {threshold:.12, rootMargin:"0px 0px -40px 0px"});
+    revealEls.forEach(function(el){ ro.observe(el); });
+  }
+
+  /* ---------- animated counters ---------- */
+  function fmt(n, prefix){
+    var s = Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return (prefix || "") + s;
+  }
+  var counters = document.querySelectorAll("[data-count]");
+  function runCounter(el){
+    var target = parseFloat(el.getAttribute("data-count"));
+    var prefix = el.getAttribute("data-prefix") || "";
+    if(reduced){ el.textContent = fmt(target, prefix); return; }
+    var start = null, dur = 1100;
+    function step(ts){
+      if(!start) start = ts;
+      var t = Math.min(1, (ts - start) / dur);
+      var eased = 1 - Math.pow(1 - t, 3);     /* easeOutCubic */
+      el.textContent = fmt(target * eased, prefix);
+      if(t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if(reduced){
+    counters.forEach(runCounter);
+  } else {
+    var co = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ runCounter(e.target); co.unobserve(e.target); }
+      });
+    }, {threshold:.5});
+    counters.forEach(function(el){ co.observe(el); });
+  }
+
+  /* ---------- rail active section ---------- */
+  var railLinks = document.querySelectorAll(".rail a");
+  if(railLinks.length){
+    var map = {};
+    railLinks.forEach(function(a){ map[a.getAttribute("data-rail")] = a; });
+    var so = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          railLinks.forEach(function(a){ a.classList.remove("active"); });
+          var link = map[e.target.id];
+          if(link) link.classList.add("active");
+        }
+      });
+    }, {rootMargin:"-30% 0px -55% 0px"});
+    ["leak","audit","findings","process","pricing","faq"].forEach(function(id){
+      var s = document.getElementById(id);
+      if(s) so.observe(s);
+    });
+  }
+
+  /* ---------- hero ops feed ---------- */
+  var feed = document.getElementById("feed");
+  var foot = document.getElementById("feedFoot");
+  var check = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var MSGS = [
+    {time:"11:42 PM", tag:"MAINTENANCE", urgent:true,  text:"“Unit 204 — AC is dead and it’s 88° in here.”", done:"Graded urgent · on-call vendor pinged · tenant answered in 38s", min:12},
+    {time:"7:05 AM",  tag:"LEASING",     urgent:false, text:"“Is the 2BR on Maple still available?”", done:"Qualified · showing booked for 4:30 PM", min:9},
+    {time:"9:14 AM",  tag:"RENT",        urgent:false, text:"Invoice #1183 — 3 days past due.", done:"Polite reminder + payment link sent · logged", min:6},
+    {time:"2:30 PM",  tag:"OWNER",       urgent:false, text:"“Where can I find my May statement?”", done:"Statement link sent · thread closed", min:5},
+    {time:"5:48 PM",  tag:"MAINTENANCE", urgent:false, text:"“Garbage disposal is humming but not spinning.”", done:"Troubleshooting steps sent · low-priority ticket opened", min:8},
+    {time:"10:09 PM", tag:"LEASING",     urgent:false, text:"New application received — 2BR on Maple.", done:"Screening checklist started · applicant acknowledged", min:11}
+  ];
+  var MAXROWS = 4, idx = 0, handled = 0, saved = 0, timer = null;
+
+  function rowHTML(m){
+    return '<div class="msg-top"><span class="msg-time num">' + m.time + '</span>' +
+           '<span class="tag' + (m.urgent ? ' urgent' : '') + '">' + m.tag + '</span></div>' +
+           '<p class="msg-text">' + m.text + '</p>' +
+           '<p class="msg-done">' + check + m.done + '</p>';
+  }
+  function addMsg(animate){
+    var m = MSGS[idx % MSGS.length];
+    idx++;
+    var el = document.createElement("div");
+    el.className = "msg" + (animate ? " enter" : "");
+    el.innerHTML = rowHTML(m);
+    feed.insertBefore(el, feed.firstChild);
+    while(feed.children.length > MAXROWS){ feed.removeChild(feed.lastChild); }
+    handled++; saved += m.min;
+    foot.innerHTML = "Handled without staff today: <b>" + handled + " messages · " + saved + " min saved</b>";
+  }
+  /* seed */
+  addMsg(false); addMsg(false); addMsg(false); addMsg(false);
+
+  if(!reduced){
+    var feedVisible = false;
+    function startFeed(){ if(!timer){ timer = setInterval(function(){ addMsg(true); }, 2600); } }
+    function stopFeed(){ if(timer){ clearInterval(timer); timer = null; } }
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        feedVisible = e.isIntersecting;
+        feedVisible && !document.hidden ? startFeed() : stopFeed();
+      });
+    }, {threshold:.2});
+    fo.observe(feed);
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){ stopFeed(); } else if(feedVisible){ startFeed(); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
