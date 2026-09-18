@@ -1,19 +1,10 @@
 # fortivexai.com
 
-Marketing site for Fortivex AI, plus a private CRM dashboard.
+Marketing site for Fortivex AI (AI operations audits for property management).
 
 ## Hosting
 
-Deployed on Netlify. Pushes to `main` deploy via GitHub Actions.
-
-## Private CRM dashboard
-
-- URL: `/dashboard`
-- Auth: HTTP Basic Auth
-- Env vars (Netlify site settings):
-  - `DASHBOARD_USER` (default `ayoub` if unset)
-  - `DASHBOARD_PASSWORD` (required)
-- Lead data: `dashboard/data/crm.json` (seeded from the Fortivex Florida CRM sheet)
+Deployed on Netlify. This repo is the source of truth; connect the existing Netlify site to this GitHub repo for continuous deploys.
 
 ## Local
 
